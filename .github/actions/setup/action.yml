@@ -5,6 +5,10 @@ inputs:
   node-version:
     description: Node.js version to install
     required: true
+  pnpm-cache:
+    description: Pass "pnpm" to cache the pnpm store. Worth it where a cold install is slow; not worth it in the container job, where install takes ~8s but saving the store takes ~28s.
+    required: false
+    default: pnpm
 
 runs:
   using: composite
@@ -14,11 +18,12 @@ runs:
     - uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
-        cache: pnpm
+        # an empty cache value means "no caching", which is setup-node's default
+        cache: ${{ inputs.pnpm-cache }}
     - run: pnpm install --frozen-lockfile
       shell: bash
-    # Turborepo reuses task output when a task's inputs hash the same; caching
-    # .turbo/cache lets later runs (and later commits) skip rebuilds.
+    # Turborepo reuses task output only when a task's inputs hash the same, so
+    # this cache cannot go stale; it lets later runs skip rebuilds.
     - uses: actions/cache@v4
       with:
         path: .turbo/cache

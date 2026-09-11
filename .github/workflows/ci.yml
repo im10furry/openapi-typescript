@@ -51,6 +51,8 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           node-version: 22
+          # this job installs in ~8s, so caching the store costs more than it saves
+          pnpm-cache: ""
       - run: pnpm run test-e2e
         env:
           # Firefox refuses to start as root unless $HOME is owned by root, and
