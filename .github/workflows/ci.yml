@@ -16,12 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup
         with:
           node-version: latest
-      - uses: pnpm/action-setup@v5
-        with:
-          run_install: true
       - run: pnpm run lint
   test-node-versions:
     runs-on: ubuntu-latest
@@ -30,12 +27,9 @@ jobs:
         node-version: [22, 24]
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: pnpm/action-setup@v5
-        with:
-          run_install: true
       - run: pnpm test
   test-e2e:
     runs-on: ubuntu-latest
@@ -54,12 +48,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup
         with:
           node-version: 22
-      - uses: pnpm/action-setup@v5
-        with:
-          run_install: true
       - run: pnpm run test-e2e
         env:
           # Firefox refuses to start as root unless $HOME is owned by root, and
@@ -70,21 +61,15 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup
         with:
           node-version: latest
-      - uses: pnpm/action-setup@v5
-        with:
-          run_install: true
       - run: pnpm test
   test-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup
         with:
           node-version: latest
-      - uses: pnpm/action-setup@v5
-        with:
-          run_install: true
       - run: pnpm test

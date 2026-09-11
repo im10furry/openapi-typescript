@@ -1,0 +1,26 @@
+name: Setup
+description: Install Node.js, pnpm and workspace dependencies, with the pnpm store and Turborepo caches restored.
+
+inputs:
+  node-version:
+    description: Node.js version to install
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # install pnpm first so actions/setup-node can locate the store to cache
+    - uses: pnpm/action-setup@v5
+    - uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+    - run: pnpm install --frozen-lockfile
+      shell: bash
+    # Turborepo reuses task output when a task's inputs hash the same; caching
+    # .turbo/cache lets later runs (and later commits) skip rebuilds.
+    - uses: actions/cache@v4
+      with:
+        path: .turbo/cache
+        key: turbo-${{ runner.os }}-${{ inputs.node-version }}-${{ github.sha }}
+        restore-keys: turbo-${{ runner.os }}-${{ inputs.node-version }}-
